@@ -1,0 +1,92 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+.container {
+    display: flex;
+    flex-direction: row;
+}
+.content-left {
+    display: flex;
+    justify-content: center;
+    padding: 15px 15px;
+    width: 50%;
+}
+.content-right {
+    width: 50%;
+    padding: 15px 20px;
+}
+.content-right > div {
+    padding-top: 20px;
+}
+.content-right .title {
+    font-weight: 500;
+    color: #000;
+    padding: 2px 15px;
+    font-style: italic;
+}
+h2 {
+    text-align: center;
+    text-transform: uppercase;
+}
+#btn-radio, #rotate-axis {
+    display: flex;
+    align-items: center;
+}
+.highlight span {
+    background: #f9c100;    
+}
+.highlight::after {
+    content: '.';
+    display: block;
+    font-size: 0;
+    height: 1px;
+    width: 100%;
+    border-bottom: 2px solid #f9c100;
+    margin-top: -1px;
+}
+.material #btn-radio {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+.translate #trans {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+.wrapper-rotate {
+    padding: 0 20px;
+}
+.rotate .swivel-axis {
+    display: flex;
+    padding-top: 15px;
+}
+
+.rotate .swivel-axis > div {
+    margin: 0 20px;
+}
+#rotate-corner {
+    margin-top: 15px; 
+}
+.scale #inner-scale {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-top: 15px;
+}
+.position-light #pos-light {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+.color .inner-color {
+    padding: 15px 15px;
+}
+.color .inner-color > div {
+    padding: 10px 0;
+}
