@@ -91,3 +91,17 @@ h2 {
 .color .inner-color > div {
     padding: 5px 0;
 }
+input[type=text] {
+    outline: none;
+    padding: 4px 8px;
+    box-sizing: border-box;
+    border:0;
+    border-bottom:1px solid #555; 
+    border-left: 1px solid #555; 
+    background:transparent;
+    margin-left: 5px;
+    
+}
+input[type=text]:hover {
+    border-color: #3498DB;
+}

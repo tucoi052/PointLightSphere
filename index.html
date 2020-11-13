@@ -4,6 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <title>Point lighted sphere</title>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -20,20 +21,24 @@
         </div>
         <div id="btn-radio">
           <div>
-            <input type="radio" name="none" value="turn-on" checked onclick="">
+            <input type="radio" id="none" name="material" value="none" checked onclick="">
             <label for="">Không chọn</label>
+            <i class="fas fa-adjust"></i>
           </div>
           <div>
-            <input type="radio" name="earth" value="turn-off" onclick="">
+            <input type="radio" id="earth" name="material" value="earth" onclick="">
             <label for="">Trái Đất</label>
+            <i class="fas fa-globe-asia"></i>
           </div>
           <div>
-            <input type="radio" name="moon" value="turn-off" onclick="">
+            <input type="radio" id="moon" name="material" value="moon" onclick="">
             <label for="">Mặt Trăng</label>
+            <i class="far fa-moon"></i>
           </div>
           <div>
-            <input type="radio" name="sun" value="turn-off" onclick="">
+            <input type="radio" id="sun" name="material" value="sun" onclick="">
             <label for="">Mặt Trời</label>
+            <i class="far fa-sun"></i>
           </div>
         </div>
       </div>
@@ -65,15 +70,15 @@
             <span style="padding-top: 15px;">Chọn trục xoay: </span>
             <div class="swivel-axis">
               <div>
-                <input type="radio" name="ox" value="turn-on" checked onclick="">
+                <input type="radio" name="axis" value="turn-on" checked onclick="">
                 <label for="">Ox</label>
               </div>
               <div>
-                <input type="radio" name="oy" value="turn-off" onclick="">
+                <input type="radio" name="axis" value="turn-off" onclick="">
                 <label for="">Oy</label>
               </div>
               <div>
-                <input type="radio" name="oz" value="turn-off" onclick="">
+                <input type="radio" name="axis" value="turn-off" onclick="">
                 <label for="">Oz</label>
               </div>
             </div>
