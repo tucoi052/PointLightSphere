@@ -91,14 +91,17 @@ function LoadData() {
 //   ANGLE_STEP = +document.getElementById("van-toc").value;
 
   // Translate
-  Tx = +document.getElementById("x-translate").value;
-  Ty = +document.getElementById("y-translate").value;
-  Tz = +document.getElementById("z-translate").value;
+  Tx = document.getElementById("x-translate").value;
+  
+  console.log('Tx',Tx)
+
+  Ty = document.getElementById("y-translate").value;
+  Tz = document.getElementById("z-translate").value;
 
   // Scale
-  Sx = +document.getElementById("x-scale").value;
-  Sy = +document.getElementById("y-scale").value;
-  Sz = +document.getElementById("z-scale").value;
+  Sx = document.getElementById("x-scale").value;
+  Sy = document.getElementById("y-scale").value;
+  Sz = document.getElementById("z-scale").value;
 
   // set translate
   TranX = 0;
@@ -109,6 +112,7 @@ function LoadData() {
   ScaleX = 1;
   ScaleY = 1;
   ScaleZ = 1;
+
 }
 
 function main() {
@@ -135,7 +139,6 @@ function main() {
     console.log("Failed to set the vertex information");
     return;
   }
-  LoadData();
   // Set the clear color and enable the depth test
   gl.clearColor(0, 0, 0, 1);
   gl.enable(gl.DEPTH_TEST);
@@ -146,6 +149,7 @@ function main() {
 
   var tick = function () {
     // Vẽ Hoạt Cảnh
+    LoadData();
 
     var modelMatrix = new Matrix4(); // Model matrix
     var mvpMatrix = new Matrix4(); // Model view projection matrix
@@ -318,7 +322,7 @@ function draw(
     modelMatrix.rotate(currentAngle, Rx, Ry, Rz);
     // modelMatrix.translate(TranX, TranY, TranZ);
     // modelMatrix.scale(ScaleX, ScaleY, ScaleZ);
-    mvpMatrix.setPerspective(30, canvas.width / canvas.height, 1, 100);
+    mvpMatrix.setPerspective(45, canvas.width / canvas.height, 1, 100);
     mvpMatrix.lookAt(0, 0, 6, 0, 0, 0, 0, 1, 0);
     mvpMatrix.multiply(modelMatrix);
     gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);

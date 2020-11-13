@@ -11,7 +11,7 @@
 <body onload="main()">
   <div class="container">
     <div class="content-left">
-      <canvas id="webgl" width="600" height="600"></canvas>
+      <canvas id="webgl" width="700" height="700"></canvas>
     </div>
     <div class="content-right">
       <h2>Point lighted sphere</h2>
@@ -70,15 +70,15 @@
             <span style="padding-top: 15px;">Chọn trục xoay: </span>
             <div class="swivel-axis">
               <div>
-                <input type="radio" name="axis" value="turn-on" checked onclick="">
+                <input type="checkbox" name="axis" value="turn-on" checked onclick="">
                 <label for="">Ox</label>
               </div>
               <div>
-                <input type="radio" name="axis" value="turn-off" onclick="">
+                <input type="checkbox" name="axis" value="turn-off" onclick="">
                 <label for="">Oy</label>
               </div>
               <div>
-                <input type="radio" name="axis" value="turn-off" onclick="">
+                <input type="checkbox" name="axis" value="turn-off" onclick="">
                 <label for="">Oz</label>
               </div>
             </div>
@@ -86,6 +86,10 @@
           <div id="rotate-corner">
             <span>Chọn góc xoay: </span>
             <input type="text" id="corner" value="0.0" onclick=""> độ
+          </div>
+          <div id="speed-rotate">
+            <span>Tốc độ xoay: </span>
+            <input type="text" id="speed" value="0.0" onclick="">
           </div>
         </div>
       </div>
