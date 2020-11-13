@@ -51,8 +51,8 @@ var Tx,
   Sx,
   Sy,
   Sz,
-  Rx = 1,
-  Ry = 0,
+  Rx = 0,
+  Ry = 1,
   Rz = 0;
 // khai báo biến hàm Tran:
 var TranX = 0.0;
@@ -71,7 +71,7 @@ var R_Light = 1,
   B_Light = 1;
 //khai báo biến vị trí điểm sáng
 var X_PointLight = 5.0,
-  Y_PointLight = 6.0,
+  Y_PointLight = 8.0,
   Z_PointLight = 7.0;
 //Khai báo biến màu sác ánh sáng xung quanh
 var R_Ambient = 0.2,
@@ -208,7 +208,7 @@ function main() {
 
 function initVertexBuffers(gl) {
   // Create a sphere
-  var SPHERE_DIV = 100;
+  var SPHERE_DIV = 10;
 
   var i, ai, si, ci;
   var j, aj, sj, cj;
@@ -314,13 +314,13 @@ function draw(
   u_MvpMatrix
 ) {
   if (Temp_Option == "Color") {
-    mvpMatrix.setPerspective(30, canvas.width / canvas.height, 1, 100);
-    mvpMatrix.lookAt(0, 0, 6, 0, 0, 0, 0, 1, 0);
-    mvpMatrix.multiply(modelMatrix);
 
     modelMatrix.rotate(currentAngle, Rx, Ry, Rz);
     // modelMatrix.translate(TranX, TranY, TranZ);
     // modelMatrix.scale(ScaleX, ScaleY, ScaleZ);
+    mvpMatrix.setPerspective(30, canvas.width / canvas.height, 1, 100);
+    mvpMatrix.lookAt(0, 0, 6, 0, 0, 0, 0, 1, 0);
+    mvpMatrix.multiply(modelMatrix);
     gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
 
     // Pass the rotation matrix to the vertex shader
