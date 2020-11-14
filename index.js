@@ -159,9 +159,9 @@ function main() {
     // Cập nhật góc quay
     currentAngle = animate(currentAngle);
 
+    ScaleSphere();
 
     TranslateSphere();
-    // ScaleSphere();
     // Hàm vẽ hoạt cảnh
     draw(mvpMatrix, modelMatrix, normalMatrix, u_NormalMatrix, u_MvpMatrix);
 
@@ -275,7 +275,7 @@ function draw(mvpMatrix,modelMatrix,normalMatrix,u_NormalMatrix,u_MvpMatrix) {
     if(RotateX!=0 || RotateY!=0 || RotateZ!=0) 
       modelMatrix.rotate(currentAngle, RotateX, RotateY, RotateZ);
     modelMatrix.translate(TranX, TranY, TranZ);
-    // modelMatrix.scale(ScaleX, ScaleY, ScaleZ);
+    modelMatrix.scale(ScaleX, ScaleY, ScaleZ);
     mvpMatrix.setPerspective(45, canvas.width / canvas.height, 1, 100);
     mvpMatrix.lookAt(0, 0, 6, 0, 0, 0, 0, 1, 0);
     mvpMatrix.multiply(modelMatrix);
@@ -307,48 +307,43 @@ function animate(angle) {
 
 function TranslateSphere() {
   // Trục X
+  TranX = parseFloat(TranX.toFixed(2));
   if(Tx == "") ;
   else if (Tx > TranX) TranX += 0.01;
   else if (Tx < TranX) TranX -= 0.01;
 
   // Trục Y
+  TranY = parseFloat(TranY.toFixed(2));
   if (Ty == "") ;
   else if (Ty > TranY) TranY += 0.01;
   else if (Ty < TranY) TranY -= 0.01;
  
 
   // Trục Z
+  TranZ = parseFloat(TranZ.toFixed(2));
   if(Tz == "") ;
   else if (Tz > TranZ) TranZ += 0.01;
   else if (Tz < TranZ) TranZ -= 0.01;
 }
 
 // Hàm co dãn:
-// function ScaleSphere() {
-//   // Trục X
-//   if(Sx == "") ;
-//   else if (Sx > ScaleX) ScaleX += 0.01;
-//   else if (Sx < ScaleX) ScaleX -= 0.01;
+function ScaleSphere() {
+  // Trục X
+  ScaleX = parseFloat(ScaleX.toFixed(2));
+  if(Sx == "") ;
+  else if (Sx > ScaleX) ScaleX += 0.01;
+  else if (Sx < ScaleX) ScaleX -= 0.01;
 
-//   if(ScaleX.length>2)
-//   ScaleX = ScaleX.toFixed(2);
-//   console.log(ScaleX.toFixed(2));
-//   console.log(ScaleX);
-
-
-//   // Trục Y
-//   if(Sy == "") ;
-//   else if (Sy > ScaleY) ScaleY += 0.01;
-//   else if (Sy < ScaleY) ScaleY -= 0.01;
-//   // ScaleY = ScaleY.toFixed(2);
-//   if(ScaleY.length>2)
-//   ScaleY = ScaleY.toFixed(2);
+  // Trục Y
+  ScaleY = parseFloat(ScaleY.toFixed(2));
+  if(Sy == "") ;
+  else if (Sy > ScaleY) ScaleY += 0.01;
+  else if (Sy < ScaleY) ScaleY -= 0.01;
   
-//   // Trục Z
-//   if(Sz == "") ;
-//   else if (Sz > ScaleZ) ScaleZ += 0.01;
-//   else if (Sz < ScaleZ) ScaleZ -= 0.01;
-//   // ScaleZ.toFixed(2);
-//   if(ScaleZ.length>2)
-//   ScaleZ = ScaleZ.toFixed(2);
-// }
+  // Trục Z
+  ScaleZ = parseFloat(ScaleZ.toFixed(2));
+  if(Sz == "") ;
+  else if (Sz > ScaleZ) ScaleZ += 0.01;
+  else if (Sz < ScaleZ) ScaleZ -= 0.01;
+ 
+}
