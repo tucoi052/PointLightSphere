@@ -42,7 +42,6 @@ var FSHADER_SOURCE =
 
 var canvas;
 var gl;
-var Temp_Option = "Color";
 var n;
 // Khai báo biến Rotate:
 var RotateX = 0, RotateY = 0, RotateZ = 0;
@@ -62,12 +61,16 @@ var X_PointLight = 5.0, Y_PointLight = 8.0, Z_PointLight = 7.0;
 var R_Ambient = 0.2, G_Ambient = 0.2, B_Ambient = 0.2;
 var Tx,Ty,Tz,Sx,Sy,Sz;
 
-function LoadData() {
-  // Color
-//   r = +document.getElementById("r").value;
-//   g = +document.getElementById("g").value;
-//   b = +document.getElementById("b").value;
+function hexToRgb(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16) / 255,
+    g: parseInt(result[2], 16) / 255,
+    b: parseInt(result[3], 16) / 255
+  } : null;
+}
 
+function LoadData() {
   // Rotate
   RotateX = document.getElementById("x-rotate").checked ? 1 : 0;
   RotateY = document.getElementById("y-rotate").checked ? 1 : 0;
@@ -88,6 +91,18 @@ function LoadData() {
   X_PointLight = document.getElementById("x-position").value;
   Y_PointLight = document.getElementById("y-position").value;
   Z_PointLight = document.getElementById("z-position").value;
+
+  //LightColor
+  var HexLight = document.getElementById("color-light").value;
+  R_Light = hexToRgb(HexLight).r;
+  G_Light = hexToRgb(HexLight).g;
+  B_Light = hexToRgb(HexLight).b;
+
+  //AmbientColor
+  var HexAmbient = document.getElementById("around-light").value;
+  R_Ambient = hexToRgb(HexAmbient).r;
+  G_Ambient = hexToRgb(HexAmbient).g;
+  B_Ambient = hexToRgb(HexAmbient).b;
   
 }
 
