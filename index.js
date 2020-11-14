@@ -44,39 +44,23 @@ var canvas;
 var gl;
 var Temp_Option = "Color";
 var n;
-// Khai báo biến Tran, Scale, Rotate:
-var Tx,
-  Ty,
-  Tz,
-  Sx,
-  Sy,
-  Sz,
-  Rx = 0,
-  Ry = 1,
-  Rz = 0;
+// Khai báo biến Rotate:
+var RotateX = 0, RotateY = 0, RotateZ = 0;
 // khai báo biến hàm Tran:
-var TranX = 0.0;
-(TranY = 0.0), (TranZ = 0.0);
+var TranX = 0.0, TranY = 0.0, TranZ = 0.0;
 // Khai báo biến hàm Scale:
-var ScaleX = 0.0,
-  ScaleY = 0.0,
-  ScaleZ = 0.0;
+var ScaleX = 0.0, ScaleY = 0.0, ScaleZ = 0.0;
 // Khai báo biến tốc độ quay:
 var ANGLE_STEP = 45;
 var currentAngle = 0.0;
 
 //Khai báo biến màu sắc ánh sáng
-var R_Light = 1,
-  G_Light = 1,
-  B_Light = 1;
+var R_Light = 1, G_Light = 1, B_Light = 1;
 //khai báo biến vị trí điểm sáng
-var X_PointLight = 5.0,
-  Y_PointLight = 8.0,
-  Z_PointLight = 7.0;
+var X_PointLight = 5.0, Y_PointLight = 8.0, Z_PointLight = 7.0;
 //Khai báo biến màu sác ánh sáng xung quanh
-var R_Ambient = 0.2,
-  G_Ambient = 0.2,
-  B_Ambient = 0.2;
+var R_Ambient = 0.2, G_Ambient = 0.2, B_Ambient = 0.2;
+var Tx,Ty,Tz,Sx,Sy,Sz;
 
 function LoadData() {
   // Color
@@ -85,16 +69,13 @@ function LoadData() {
 //   b = +document.getElementById("b").value;
 
   // Rotate
-//   Rx = +document.getElementById("x-rotate").value;
-//   Ry = +document.getElementById("y-rotate").value;
-//   Rz = +document.getElementById("z-rotate").value;
-//   ANGLE_STEP = +document.getElementById("van-toc").value;
+  RotateX = document.getElementById("x-rotate").checked ? 1 : 0;
+  RotateY = document.getElementById("y-rotate").checked ? 1 : 0;
+  RotateZ = document.getElementById("z-rotate").checked ? 1 : 0;
+  ANGLE_STEP = document.getElementById("speed").value;
 
   // Translate
   Tx = document.getElementById("x-translate").value;
-  
-  console.log('Tx',Tx)
-
   Ty = document.getElementById("y-translate").value;
   Tz = document.getElementById("z-translate").value;
 
@@ -103,16 +84,11 @@ function LoadData() {
   Sy = document.getElementById("y-scale").value;
   Sz = document.getElementById("z-scale").value;
 
-  // set translate
-  TranX = 0;
-  TranY = 0;
-  TranZ = 0;
-
-  // set scale
-  ScaleX = 1;
-  ScaleY = 1;
-  ScaleZ = 1;
-
+  // //PointLight
+  X_PointLight = document.getElementById("x-position").value;
+  Y_PointLight = document.getElementById("y-position").value;
+  Z_PointLight = document.getElementById("z-position").value;
+  
 }
 
 function main() {
@@ -180,27 +156,12 @@ function main() {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
 
-    //Tịnh tiến
-    // modelMatrix.translate(1, 0, 0);
-
-    //Xoay
-    //   modelMatrix.rotate(1,0,0,45)
     // Cập nhật góc quay
     currentAngle = animate(currentAngle);
 
-    // Calculate the view projection matrix
-    //   mvpMatrix.setPerspective(30, canvas.width / canvas.height, 1, 100);
-    //   mvpMatrix.lookAt(0, 0, 6, 0, 0, 0, 0, 1, 0);
-    //   mvpMatrix.multiply(modelMatrix);
-    // Pass the model view projection matrix to u_MvpMatrix
-    // gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
 
-    // Calculate the matrix to transform the normal based on the model matrix
-    // normalMatrix.setInverseOf(modelMatrix);
-    // normalMatrix.transpose();
-    // // Pass the transformation matrix for normals to u_NormalMatrix
-    // gl.uniformMatrix4fv(u_NormalMatrix, false, normalMatrix.elements);
-
+    TranslateSphere();
+    // ScaleSphere();
     // Hàm vẽ hoạt cảnh
     draw(mvpMatrix, modelMatrix, normalMatrix, u_NormalMatrix, u_MvpMatrix);
 
@@ -310,17 +271,10 @@ function initArrayBuffer(gl, attribute, data, type, num) {
 }
 
 // Hàm vẽ các hoạt cảnh
-function draw(
-  mvpMatrix,
-  modelMatrix,
-  normalMatrix,
-  u_NormalMatrix,
-  u_MvpMatrix
-) {
-  if (Temp_Option == "Color") {
-
-    modelMatrix.rotate(currentAngle, Rx, Ry, Rz);
-    // modelMatrix.translate(TranX, TranY, TranZ);
+function draw(mvpMatrix,modelMatrix,normalMatrix,u_NormalMatrix,u_MvpMatrix) {
+    if(RotateX!=0 || RotateY!=0 || RotateZ!=0) 
+      modelMatrix.rotate(currentAngle, RotateX, RotateY, RotateZ);
+    modelMatrix.translate(TranX, TranY, TranZ);
     // modelMatrix.scale(ScaleX, ScaleY, ScaleZ);
     mvpMatrix.setPerspective(45, canvas.width / canvas.height, 1, 100);
     mvpMatrix.lookAt(0, 0, 6, 0, 0, 0, 0, 1, 0);
@@ -331,12 +285,11 @@ function draw(
     normalMatrix.setInverseOf(modelMatrix);
     normalMatrix.transpose();
     gl.uniformMatrix4fv(u_NormalMatrix, false, normalMatrix.elements);
-  }
 
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  // Draw the cube
+  // Draw the sphere
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_SHORT, 0);
 }
 
@@ -354,53 +307,48 @@ function animate(angle) {
 
 function TranslateSphere() {
   // Trục X
-  if (Tx > 0) TranX += 0.01;
-  if (Tx < 0) TranX -= 0.01;
-  if (TranX.toExponential(2) == Tx) {
-    TranX = Tx;
-    Tx = 0;
-  }
+  if(Tx == "") ;
+  else if (Tx > TranX) TranX += 0.01;
+  else if (Tx < TranX) TranX -= 0.01;
 
   // Trục Y
-  if (Ty > 0) TranY += 0.01;
-  if (Ty < 0) TranY -= 0.01;
-  if (TranY.toExponential(2) == Ty) {
-    TranY = Ty;
-    Ty = 0;
-  }
+  if (Ty == "") ;
+  else if (Ty > TranY) TranY += 0.01;
+  else if (Ty < TranY) TranY -= 0.01;
+ 
 
   // Trục Z
-  if (Tz > 0) TranZ += 0.01;
-  if (Tz < 0) TranZ -= 0.01;
-  if (TranZ.toExponential(2) == Tz) {
-    TranZ = Tz;
-    Tz = 0;
-  }
+  if(Tz == "") ;
+  else if (Tz > TranZ) TranZ += 0.01;
+  else if (Tz < TranZ) TranZ -= 0.01;
 }
 
 // Hàm co dãn:
-function ScaleSphere() {
-  // Trục X
-  if (Sx > 1) ScaleX += 0.01;
-  if (Sx < 1) ScaleX -= 0.01;
-  if (ScaleX.toExponential(2) == Sx) {
-    ScaleX = Sx;
-    Sx = 1;
-  }
+// function ScaleSphere() {
+//   // Trục X
+//   if(Sx == "") ;
+//   else if (Sx > ScaleX) ScaleX += 0.01;
+//   else if (Sx < ScaleX) ScaleX -= 0.01;
 
-  // Trục Y
-  if (Sy > 1) ScaleY += 0.01;
-  if (Sy < 1) ScaleY -= 0.01;
-  if (ScaleY.toExponential(2) == Sy) {
-    ScaleY = Sy;
-    Sy = 1;
-  }
+//   if(ScaleX.length>2)
+//   ScaleX = ScaleX.toFixed(2);
+//   console.log(ScaleX.toFixed(2));
+//   console.log(ScaleX);
 
-  // Trục Z
-  if (Sz > 1) ScaleZ += 0.01;
-  if (Sz < 1) ScaleZ -= 0.01;
-  if (ScaleZ.toExponential(2) == Sz) {
-    ScaleY = Sz;
-    Sz = 1;
-  }
-}
+
+//   // Trục Y
+//   if(Sy == "") ;
+//   else if (Sy > ScaleY) ScaleY += 0.01;
+//   else if (Sy < ScaleY) ScaleY -= 0.01;
+//   // ScaleY = ScaleY.toFixed(2);
+//   if(ScaleY.length>2)
+//   ScaleY = ScaleY.toFixed(2);
+  
+//   // Trục Z
+//   if(Sz == "") ;
+//   else if (Sz > ScaleZ) ScaleZ += 0.01;
+//   else if (Sz < ScaleZ) ScaleZ -= 0.01;
+//   // ScaleZ.toFixed(2);
+//   if(ScaleZ.length>2)
+//   ScaleZ = ScaleZ.toFixed(2);
+// }

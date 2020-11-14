@@ -70,23 +70,23 @@
             <span style="padding-top: 15px;">Chọn trục xoay: </span>
             <div class="swivel-axis">
               <div>
-                <input type="checkbox" name="axis" value="turn-on" checked onclick="">
+                <input id="x-rotate" type="checkbox" name="axis" value="1" checked onclick="">
                 <label for="">Ox</label>
               </div>
               <div>
-                <input type="checkbox" name="axis" value="turn-off" onclick="">
+                <input id="y-rotate" type="checkbox" name="axis" value="1" onclick="">
                 <label for="">Oy</label>
               </div>
               <div>
-                <input type="checkbox" name="axis" value="turn-off" onclick="">
+                <input id="z-rotate" type="checkbox" name="axis" value="1" onclick="">
                 <label for="">Oz</label>
               </div>
             </div>
           </div>
-          <div id="rotate-corner">
+          <!-- <div id="rotate-corner">
             <span>Chọn góc xoay: </span>
             <input type="text" id="corner" value="0.0" onclick=""> độ
-          </div>
+          </div> -->
           <div id="speed-rotate">
             <span>Tốc độ xoay: </span>
             <input type="text" id="speed" value="0.0" onclick="">
@@ -100,15 +100,15 @@
         <div id="inner-scale">
           <div>
             <label for="">Ox</label>
-            <input type="text" id="x-scale" value="0.0">
+            <input type="text" id="x-scale" value="1.0">
           </div>
           <div>
             <label for="">Oy</label>
-            <input type="text" id="y-scale" value="0.0">
+            <input type="text" id="y-scale" value="1.0">
           </div>
           <div>
             <label for="">Oz</label>
-            <input type="text" id="z-scale" value="0.0">
+            <input type="text" id="z-scale" value="1.0">
           </div>
         </div>
       </div>
@@ -122,15 +122,15 @@
         <div id="pos-light">
           <div>
             <label for="">x</label>
-            <input type="text" id="x-position" value="0.0">
+            <input type="text" id="x-position" value="5.0">
           </div>
           <div>
             <label for="">y</label>
-            <input type="text" id="y-position" value="0.0">
+            <input type="text" id="y-position" value="8.0">
           </div>
           <div>
             <label for="">z</label>
-            <input type="text" id="z-position" value="0.0">
+            <input type="text" id="z-position" value="7.0">
           </div>
         </div>
       </div>
@@ -147,10 +147,10 @@
             <label for="">Màu ánh sáng xung quanh</label>
             <input type="color" id="around-light" name="aroundcolor" value="#00ff40">
           </div>
-          <div>
+          <!-- <div>
             <label for="">Màu đối tượng</label>
             <input type="color" id="object-color" name="objcolor" value="#ffff00">
-          </div>
+          </div> -->
         </div> 
       </div>
     </div>
