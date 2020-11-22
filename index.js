@@ -2,7 +2,6 @@
 // Vertex shader program
 var VSHADER_SOURCE =
   "attribute vec4 a_Position;\n" +
-  //  'attribute vec4 a_Color;\n' + // Defined constant in main()
   "attribute vec4 a_Normal;\n" +
   "uniform mat4 u_MvpMatrix;\n" +
   "uniform mat4 u_ModelMatrix;\n" + // Model matrix
@@ -10,9 +9,9 @@ var VSHADER_SOURCE =
   "uniform vec3 u_LightColor;\n" + // Light color
   "uniform vec3 u_LightPosition;\n" + // Position of the light source
   "uniform vec3 u_AmbientLight;\n" + // Ambient light color
+  "uniform vec4 u_Color;\n" + // Sphere color
   "varying vec4 v_Color;\n" +
   "void main() {\n" +
-  "  vec4 color = vec4(1.0, 1.0, 1.0, 1.0);\n" + // Sphere color
   "  gl_Position = u_MvpMatrix * a_Position;\n" +
   // Calculate a normal to be fit with a model matrix, and make it 1.0 in length
   "  vec3 normal = normalize(vec3(u_NormalMatrix * a_Normal));\n" +
@@ -23,11 +22,11 @@ var VSHADER_SOURCE =
   // The dot product of the light direction and the normal
   "  float nDotL = max(dot(lightDirection, normal), 0.0);\n" +
   // Calculate the color due to diffuse reflection
-  "  vec3 diffuse = u_LightColor * color.rgb * nDotL;\n" +
+  "  vec3 diffuse = u_LightColor * u_Color.rgb * nDotL;\n" +
   // Calculate the color due to ambient reflection
-  "  vec3 ambient = u_AmbientLight * color.rgb;\n" +
+  "  vec3 ambient = u_AmbientLight * u_Color.rgb;\n" +
   // Add the surface colors due to diffuse reflection and ambient reflection
-  "  v_Color = vec4(diffuse + ambient, color.a);\n" +
+  "  v_Color = vec4(diffuse + ambient, u_Color.a);\n" +
   "}\n";
 
 // Fragment shader program
@@ -59,6 +58,8 @@ var R_Light = 1, G_Light = 1, B_Light = 1;
 var X_PointLight = 5.0, Y_PointLight = 8.0, Z_PointLight = 7.0;
 //Khai báo biến màu sác ánh sáng xung quanh
 var R_Ambient = 0.2, G_Ambient = 0.2, B_Ambient = 0.2;
+//Khai báo biến màu sắc Sphere
+var R_Sphere = 1.0, G_Sphere = 1.0, B_Sphere = 1.0;
 var Tx,Ty,Tz,Sx,Sy,Sz;
 
 function hexToRgb(hex) {
@@ -104,6 +105,12 @@ function LoadData() {
   G_Ambient = hexToRgb(HexAmbient).g;
   B_Ambient = hexToRgb(HexAmbient).b;
   
+  //SphereColor
+  var HexSphere = document.getElementById("object-color").value;
+  R_Sphere = hexToRgb(HexSphere).r;
+  G_Sphere = hexToRgb(HexSphere).g;
+  B_Sphere = hexToRgb(HexSphere).b;
+
 }
 
 function main() {
@@ -130,22 +137,22 @@ function main() {
     console.log("Failed to set the vertex information");
     return;
   }
+
+  // Set texture
+  // if (!initTextures()) {
+  //   console.log('Failed to intialize the texture.');
+  //   return;
+  // }
   // Set the clear color and enable the depth test
   gl.clearColor(0, 0, 0, 1);
   gl.enable(gl.DEPTH_TEST);
 
-  //   var modelMatrix = new Matrix4(); // Model matrix
-  //   var mvpMatrix = new Matrix4(); // Model view projection matrix
-  //   var normalMatrix = new Matrix4(); // Transformation matrix for normals
-
   var tick = function () {
-    // Vẽ Hoạt Cảnh
     LoadData();
 
     var modelMatrix = new Matrix4(); // Model matrix
     var mvpMatrix = new Matrix4(); // Model view projection matrix
     var normalMatrix = new Matrix4(); // Transformation matrix for normals
-    // Get the storage locations of uniform variables and so on
     // Lấy giá trị lưu trữ
     u_ModelMatrix = gl.getUniformLocation(gl.program, "u_ModelMatrix");
     u_MvpMatrix = gl.getUniformLocation(gl.program, "u_MvpMatrix");
@@ -153,17 +160,21 @@ function main() {
     u_LightColor = gl.getUniformLocation(gl.program, "u_LightColor");
     u_LightPosition = gl.getUniformLocation(gl.program, "u_LightPosition");
     u_AmbientLight = gl.getUniformLocation(gl.program, "u_AmbientLight");
-    if (!u_MvpMatrix || !u_NormalMatrix || !u_LightColor || !u_LightPosition || !u_AmbientLight ) {
+    u_Color = gl.getUniformLocation(gl.program,"u_Color");
+
+    if (!u_MvpMatrix || !u_NormalMatrix || !u_LightColor || !u_LightPosition || !u_AmbientLight || !u_Color ) {
       console.log("Failed to get the storage location");
       return;
     }
 
+    gl.uniform4f(u_Color, R_Sphere, G_Sphere, B_Sphere, 1.0);
     // Set the light color (white)
     gl.uniform3f(u_LightColor, R_Light, G_Light, B_Light);
     // Set the light direction (in the world coordinate)
     gl.uniform3f(u_LightPosition, X_PointLight, Y_PointLight, Z_PointLight);
     // Set the ambient light
     gl.uniform3f(u_AmbientLight, R_Ambient, G_Ambient, B_Ambient);
+
 
     // Pass the model matrix to u_ModelMatrix
     gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
@@ -185,6 +196,38 @@ function main() {
   };
   tick();
 }
+
+// function handleLoadedTexture(texture) {
+//   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+//   gl.bindTexture(gl.TEXTURE_2D, texture);
+//   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
+//   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+//   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+//   gl.generateMipmap(gl.TEXTURE_2D);
+
+//   gl.bindTexture(gl.TEXTURE_2D, null);
+// }
+
+// var earthColorMapTexture;
+// var earthSpecularMapTexture;
+
+// function initTextures() {
+//   earthColorMapTexture = gl.createTexture();
+//         earthColorMapTexture.image = new Image();
+//         earthColorMapTexture.image.onload = function () {
+//             handleLoadedTexture(earthColorMapTexture)
+//         }
+//         earthColorMapTexture.image.src = "earth.jpg";
+
+//         earthSpecularMapTexture = gl.createTexture();
+//         earthSpecularMapTexture.image = new Image();
+//         earthSpecularMapTexture.image.onload = function () {
+//             handleLoadedTexture(earthSpecularMapTexture)
+//         }
+//         earthSpecularMapTexture.image.src = "earth-specular.gif";
+
+//   return true;
+// }
 
 function initVertexBuffers(gl) {
   // Create a sphere
@@ -320,6 +363,7 @@ function animate(angle) {
   return newAngle;
 }
 
+// Hàm tịnh tiến
 function TranslateSphere() {
   // Trục X
   TranX = parseFloat(TranX.toFixed(2));
