@@ -1,15 +1,14 @@
-// PointLightedCube.js (c) 2012 matsuda and kanda
-// Vertex shader program
 var VSHADER_SOURCE =
-  "attribute vec4 a_Position;\n" +
-  "attribute vec4 a_Normal;\n" +
-  "uniform mat4 u_MvpMatrix;\n" +
+  "attribute vec4 a_Position;\n" + // biến vị trí
+  "attribute vec4 a_Normal;\n" + // biến pháp tuyến
+  "uniform mat4 u_MvpMatrix;\n" + // model view project matrix 
   "uniform mat4 u_ModelMatrix;\n" + // Model matrix
   "uniform mat4 u_NormalMatrix;\n" + // Transformation matrix of the normal
   "uniform vec3 u_LightColor;\n" + // Light color
   "uniform vec3 u_LightPosition;\n" + // Position of the light source
   "uniform vec3 u_AmbientLight;\n" + // Ambient light color
-  "uniform vec4 u_Color;\n" + // Sphere color
+  "uniform vec4 u_SphereColor;\n" + // Sphere color
+  "uniform vec4 u_CanvasColor;\n" + // Canvas color
   "varying vec4 v_Color;\n" +
   "void main() {\n" +
   "  gl_Position = u_MvpMatrix * a_Position;\n" +
@@ -22,11 +21,11 @@ var VSHADER_SOURCE =
   // The dot product of the light direction and the normal
   "  float nDotL = max(dot(lightDirection, normal), 0.0);\n" +
   // Calculate the color due to diffuse reflection
-  "  vec3 diffuse = u_LightColor * u_Color.rgb * nDotL;\n" +
+  "  vec3 diffuse = u_LightColor * u_SphereColor.rgb * nDotL;\n" +
   // Calculate the color due to ambient reflection
-  "  vec3 ambient = u_AmbientLight * u_Color.rgb;\n" +
+  "  vec3 ambient = u_AmbientLight * u_SphereColor.rgb;\n" +
   // Add the surface colors due to diffuse reflection and ambient reflection
-  "  v_Color = vec4(diffuse + ambient, u_Color.a);\n" +
+  "  v_Color = vec4(diffuse + ambient, u_SphereColor.a);\n" +
   "}\n";
 
 // Fragment shader program
@@ -42,6 +41,7 @@ var FSHADER_SOURCE =
 var canvas;
 var gl;
 var n;
+var zoom = 10;
 // Khai báo biến Rotate:
 var RotateX = 0, RotateY = 0, RotateZ = 0;
 // khai báo biến hàm Tran:
@@ -60,6 +60,9 @@ var X_PointLight = 5.0, Y_PointLight = 8.0, Z_PointLight = 7.0;
 var R_Ambient = 0.2, G_Ambient = 0.2, B_Ambient = 0.2;
 //Khai báo biến màu sắc Sphere
 var R_Sphere = 1.0, G_Sphere = 1.0, B_Sphere = 1.0;
+// Khai báo biến màu sắc canvas
+var R_Canvas = 1.0, G_Canvas = 1.0, B_Canvas = 1.0;
+// Khai báo biến nhận vào từ html
 var Tx,Ty,Tz,Sx,Sy,Sz;
 
 function hexToRgb(hex) {
@@ -111,10 +114,15 @@ function LoadData() {
   G_Sphere = hexToRgb(HexSphere).g;
   B_Sphere = hexToRgb(HexSphere).b;
 
+  //CanvasColor
+  var HexCanvas = document.getElementById("canvas-color").value;
+  R_Canvas = hexToRgb(HexCanvas).r;
+  G_Canvas = hexToRgb(HexCanvas).g;
+  B_Canvas = hexToRgb(HexCanvas).b;
+
 }
 
 function main() {
-    
   // Retrieve <canvas> element
   canvas = document.getElementById("webgl");
 
@@ -138,11 +146,6 @@ function main() {
     return;
   }
 
-  // Set texture
-  // if (!initTextures()) {
-  //   console.log('Failed to intialize the texture.');
-  //   return;
-  // }
   // Set the clear color and enable the depth test
   gl.clearColor(0, 0, 0, 1);
   gl.enable(gl.DEPTH_TEST);
@@ -154,39 +157,51 @@ function main() {
     var mvpMatrix = new Matrix4(); // Model view projection matrix
     var normalMatrix = new Matrix4(); // Transformation matrix for normals
     // Lấy giá trị lưu trữ
-    u_ModelMatrix = gl.getUniformLocation(gl.program, "u_ModelMatrix");
-    u_MvpMatrix = gl.getUniformLocation(gl.program, "u_MvpMatrix");
-    u_NormalMatrix = gl.getUniformLocation(gl.program, "u_NormalMatrix");
-    u_LightColor = gl.getUniformLocation(gl.program, "u_LightColor");
-    u_LightPosition = gl.getUniformLocation(gl.program, "u_LightPosition");
-    u_AmbientLight = gl.getUniformLocation(gl.program, "u_AmbientLight");
-    u_Color = gl.getUniformLocation(gl.program,"u_Color");
+    var u_ModelMatrix = gl.getUniformLocation(gl.program, "u_ModelMatrix");
+    var u_MvpMatrix = gl.getUniformLocation(gl.program, "u_MvpMatrix");
+    var u_NormalMatrix = gl.getUniformLocation(gl.program, "u_NormalMatrix");
+    var u_LightColor = gl.getUniformLocation(gl.program, "u_LightColor");
+    var u_LightPosition = gl.getUniformLocation(gl.program, "u_LightPosition");
+    var u_AmbientLight = gl.getUniformLocation(gl.program, "u_AmbientLight");
+    var u_SphereColor = gl.getUniformLocation(gl.program,"u_SphereColor");
+    var u_CanvasColor = gl.getUniformLocation(gl.program,"u_CanvasColor");
 
-    if (!u_MvpMatrix || !u_NormalMatrix || !u_LightColor || !u_LightPosition || !u_AmbientLight || !u_Color ) {
+    if (!u_MvpMatrix || !u_NormalMatrix || !u_LightColor || !u_LightPosition || !u_AmbientLight || !u_SphereColor ) {
       console.log("Failed to get the storage location");
       return;
     }
 
-    gl.uniform4f(u_Color, R_Sphere, G_Sphere, B_Sphere, 1.0);
-    // Set the light color (white)
+    // Đặt màu cho sphere
+    gl.uniform4f(u_SphereColor, R_Sphere, G_Sphere, B_Sphere, 1.0);
+    // Đặt màu cho canvas
+    gl.uniform4f(u_CanvasColor, R_Canvas, G_Canvas, B_Canvas, 1.0);
+    // Đặt màu ánh sáng
     gl.uniform3f(u_LightColor, R_Light, G_Light, B_Light);
-    // Set the light direction (in the world coordinate)
+    // Đặt vị trí điểm sáng
     gl.uniform3f(u_LightPosition, X_PointLight, Y_PointLight, Z_PointLight);
-    // Set the ambient light
+    // Đặt màu ambient
     gl.uniform3f(u_AmbientLight, R_Ambient, G_Ambient, B_Ambient);
-
-
     // Pass the model matrix to u_ModelMatrix
     gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
-
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    // Đặt màu cho canvas
+    gl.clearColor(R_Canvas, G_Canvas, B_Canvas, 1);
+    // Khử mặt khuất
     gl.enable(gl.DEPTH_TEST);
+
+    // Sự kiện cuộn chuột
+    canvas.onmousewheel = function (ev) {
+      if (ev.deltaY > 0 && zoom < 100) { // sự kiện cuộn lên
+          zoom++;
+      } else if(zoom > 1){ // sự kiện cuộn xuống
+          zoom--;
+      }
+    }
 
     // Cập nhật góc quay
     currentAngle = animate(currentAngle);
 
+    // Hàm tăng dần giá trị
     ScaleSphere();
-
     TranslateSphere();
     // Hàm vẽ hoạt cảnh
     draw(mvpMatrix, modelMatrix, normalMatrix, u_NormalMatrix, u_MvpMatrix);
@@ -196,38 +211,6 @@ function main() {
   };
   tick();
 }
-
-// function handleLoadedTexture(texture) {
-//   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-//   gl.bindTexture(gl.TEXTURE_2D, texture);
-//   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
-//   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-//   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-//   gl.generateMipmap(gl.TEXTURE_2D);
-
-//   gl.bindTexture(gl.TEXTURE_2D, null);
-// }
-
-// var earthColorMapTexture;
-// var earthSpecularMapTexture;
-
-// function initTextures() {
-//   earthColorMapTexture = gl.createTexture();
-//         earthColorMapTexture.image = new Image();
-//         earthColorMapTexture.image.onload = function () {
-//             handleLoadedTexture(earthColorMapTexture)
-//         }
-//         earthColorMapTexture.image.src = "earth.jpg";
-
-//         earthSpecularMapTexture = gl.createTexture();
-//         earthSpecularMapTexture.image = new Image();
-//         earthSpecularMapTexture.image.onload = function () {
-//             handleLoadedTexture(earthSpecularMapTexture)
-//         }
-//         earthSpecularMapTexture.image.src = "earth-specular.gif";
-
-//   return true;
-// }
 
 function initVertexBuffers(gl) {
   // Create a sphere
@@ -334,8 +317,8 @@ function draw(mvpMatrix,modelMatrix,normalMatrix,u_NormalMatrix,u_MvpMatrix) {
       modelMatrix.rotate(currentAngle, RotateX, RotateY, RotateZ);
     modelMatrix.translate(TranX, TranY, TranZ);
     modelMatrix.scale(ScaleX, ScaleY, ScaleZ);
-    mvpMatrix.setPerspective(45, canvas.width / canvas.height, 1, 100);
-    mvpMatrix.lookAt(0, 0, 6, 0, 0, 0, 0, 1, 0);
+    mvpMatrix.setPerspective(30, canvas.width / canvas.height, 1, 100);
+    mvpMatrix.lookAt(0, 0, zoom, 0, 0, 0, 0, 1, 0);
     mvpMatrix.multiply(modelMatrix);
     gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
 
